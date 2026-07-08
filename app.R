@@ -11,9 +11,15 @@
 ## the credential comes from gs_service_account.json in this folder. When
 ## deployed on Posit Connect Cloud (which needs a public GitHub repo on the
 ## free tier), that file is never committed to git - instead the app reads
-## the same JSON from the GS_SERVICE_ACCOUNT_JSON environment variable,
-## which you set in Connect Cloud's "Configure variables" screen at publish
-## time. See README.md for the full deploy steps.
+## the same JSON, base64-encoded, from the GS_SERVICE_ACCOUNT_JSON_B64
+## environment variable, which you set in Connect Cloud's "Configure
+## variables" screen at publish time. Base64 turns the credential into one
+## unbroken line of plain characters with no line breaks or quotes, which
+## survives being pasted into a web form's text field intact - the raw
+## multi-line JSON (with its embedded private-key line breaks) got mangled
+## when pasted directly, which is what caused the first deploy attempt's
+## "path does not represent a service account" error. See README.md for
+## the full deploy steps.
 ## ---------------------------------------------------------------------------
 
 library(shiny)
@@ -23,6 +29,7 @@ library(tidyr)
 library(tibble)
 library(ggplot2)
 library(scales)
+library(jsonlite)
 
 ## --- Configuration ----------------------------------------------------------
 
@@ -39,10 +46,18 @@ SHEET_TAB          <- "Form responses 1"
 
 KEY_FILE <- "gs_service_account.json"
 # On Connect Cloud (or anywhere else that can't have the raw JSON file
-# committed to a public repo), set this environment variable to the full
-# contents of gs_service_account.json instead. Locally it'll be unset, so
-# the app just falls back to reading the file straight off disk.
-GS_SERVICE_ACCOUNT_JSON <- Sys.getenv("GS_SERVICE_ACCOUNT_JSON", unset = "")
+# committed to a public repo), set GS_SERVICE_ACCOUNT_JSON_B64 to the
+# base64-encoded contents of gs_service_account.json instead (see README
+# for the exact command). Locally, neither env var is set, so the app
+# just falls back to reading the file straight off disk. A plain
+# (non-base64) GS_SERVICE_ACCOUNT_JSON is still supported as a fallback,
+# but base64 is what avoids the paste-corruption issue.
+GS_SERVICE_ACCOUNT_JSON_B64 <- Sys.getenv("GS_SERVICE_ACCOUNT_JSON_B64", unset = "")
+GS_SERVICE_ACCOUNT_JSON <- if (nzchar(GS_SERVICE_ACCOUNT_JSON_B64)) {
+  rawToChar(jsonlite::base64_dec(GS_SERVICE_ACCOUNT_JSON_B64))
+} else {
+  Sys.getenv("GS_SERVICE_ACCOUNT_JSON", unset = "")
+}
 
 # Positional column names (these sheets were built with a fixed column order,
 # so we rename by position rather than relying on the long descriptive

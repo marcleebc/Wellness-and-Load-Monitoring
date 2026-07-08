@@ -126,10 +126,23 @@ git push
 5. Select the `squad-dashboard` repository, confirm the branch (`main`),
    and select `app.R` as the primary file.
 6. Click "Advanced settings" -> "Add variable" under Configure variables.
-7. Name: `GS_SERVICE_ACCOUNT_JSON`. Value: open `gs_service_account.json`
-   in a text editor, select all, copy, and paste the entire contents in as
-   the value.
+7. Name: `GS_SERVICE_ACCOUNT_JSON_B64`. For the value, don't copy the JSON
+   file directly - its multi-line private key can get mangled when pasted
+   into a web form. Instead, base64-encode it first. In a Mac Terminal, cd
+   into this `squad_dashboard` folder and run:
+
+   ```bash
+   base64 -i gs_service_account.json | pbcopy
+   ```
+
+   That copies the encoded credential straight to your clipboard as one
+   long line with no line breaks - paste that as the variable's value.
 8. Click Publish.
+
+(If you already published once using the plain `GS_SERVICE_ACCOUNT_JSON`
+variable and hit a "path does not represent a service account" error,
+that's exactly this paste-corruption issue - delete that variable and use
+`GS_SERVICE_ACCOUNT_JSON_B64` as above instead, then republish.)
 
 Connect Cloud will show build logs while it deploys. Once it finishes,
 you'll get a shareable URL for the dashboard.
