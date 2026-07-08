@@ -29,7 +29,14 @@ library(tidyr)
 library(tibble)
 library(ggplot2)
 library(scales)
-library(jsonlite)
+# NOTE: deliberately NOT library(jsonlite) here - jsonlite has its own
+# validate() function (for checking JSON syntax), and loading it after
+# shiny lets it silently override shiny::validate(), which every
+# validate(need(...)) call in this app relies on to show friendly "no
+# data yet" messages instead of crashing. We only need one function from
+# jsonlite (below, for decoding the base64-encoded credential), so we call
+# it as jsonlite::base64_dec() without attaching the package at all - that
+# avoids the masking issue entirely.
 
 ## --- Configuration ----------------------------------------------------------
 
