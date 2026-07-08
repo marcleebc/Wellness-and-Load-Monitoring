@@ -1,0 +1,10 @@
+# Never commit the real Google service account credential - Connect Cloud
+# reads it from the GS_SERVICE_ACCOUNT_JSON environment variable instead.
+gs_service_account.json
+
+# RStudio / R housekeeping files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
