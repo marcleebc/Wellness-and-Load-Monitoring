@@ -471,7 +471,7 @@ server <- function(input, output, session) {
       scale_y_continuous(
         name = "Load (AU)", limits = c(0, axis_max),
         sec.axis = sec_axis(~ . / axis_max * 6 + 1,
-                             name = paste0(input$weekly_metric, " (1-7, lower = better)"))
+                             name = paste0(input$weekly_metric, " (1-7, Higher = better)"))
       ) +
       labs(x = NULL,
            title = paste0("Weekly Load & ", input$weekly_metric, " - ", title_who,
