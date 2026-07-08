@@ -514,7 +514,7 @@ server <- function(input, output, session) {
       scale_y_continuous(limits = function(l) c(min(-2, l[1]), max(2, l[2]))) +
       labs(x = NULL, y = "Z Score",
            title = paste0("Individual ", input$wellness_metric, " vs Group - ", format(input$summary_date, "%d %b %Y")),
-           caption = "Scale runs good-to-bad, so a higher Z score here means worse than the group.") +
+           caption = "Higher means better than the group.") +
       theme_minimal(base_size = 13) +
       theme(axis.text.x = element_text(angle = 45, hjust = 1),
             plot.title = element_text(face = "bold"))
